@@ -2,6 +2,12 @@
 
 A repo to start a Minecraft for Type 1 Diabetes Server.
 
+## Prerequisites
+
+- [Docker](https://www.docker.com/)
+- [Node](https://nodejs.org/en/)
+- [Minecraft Java Edition](https://minecraft.net)
+
 ## Install
 
 Clone this repo:
@@ -16,8 +22,12 @@ Install dependencies:
 cd mct1-server && npm i
 ```
 
+## Run
+
 Start the server:
 
 ```bash
 npm start
 ```
+
+Now you can connect your Minecraft client to `localhost`.
