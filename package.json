@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"No tests\" && exit 0",
-    "start": "docker "
+    "start": "./run.sh"
   },
   "repository": {
     "type": "git",
