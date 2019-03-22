@@ -1,5 +1,5 @@
 {
-  "name": "mct1-server",
+  "name": "@magikcraft/mct1-server",
   "version": "1.0.0",
   "description": "A Minecraft for Type 1 Diabetes Server",
   "main": "index.js",
@@ -26,5 +26,8 @@
   "homepage": "https://github.com/Magikcraft/mct1-server#readme",
   "dependencies": {
     "@magikcraft/mct1": "^0.1.1"
+  },
+  "config": {
+    "access": "public"
   }
 }
