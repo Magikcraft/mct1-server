@@ -1,33 +1,33 @@
 {
-  "name": "@magikcraft/mct1-server",
-  "version": "1.0.0",
-  "description": "A Minecraft for Type 1 Diabetes Server",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"No tests\" && exit 0",
-    "start": "./run.sh"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Magikcraft/mct1-server.git"
-  },
-  "keywords": [
-    "minecraft",
-    "scriptcraft",
-    "magikcraft",
-    "game",
-    "diabetes"
-  ],
-  "author": "Magikcraft.io",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/Magikcraft/mct1-server/issues"
-  },
-  "homepage": "https://github.com/Magikcraft/mct1-server#readme",
-  "dependencies": {
-    "@magikcraft/mct1": "^0.1.1"
-  },
-  "config": {
-    "access": "public"
-  }
+    "name": "@magikcraft/mct1-server",
+    "version": "1.0.0",
+    "description": "A Minecraft for Type 1 Diabetes Server",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"No tests\" && exit 0",
+        "start": "./run.sh"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Magikcraft/mct1-server.git"
+    },
+    "keywords": [
+        "minecraft",
+        "scriptcraft",
+        "magikcraft",
+        "game",
+        "diabetes"
+    ],
+    "author": "Magikcraft.io",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/Magikcraft/mct1-server/issues"
+    },
+    "homepage": "https://github.com/Magikcraft/mct1-server#readme",
+    "dependencies": {
+        "@magikcraft/mct1": "^0.1.1"
+    },
+    "config": {
+        "access": "public"
+    }
 }

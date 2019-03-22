@@ -4,9 +4,9 @@ A repo to start a Minecraft for Type 1 Diabetes Server.
 
 ## Prerequisites
 
-- [Docker](https://www.docker.com/)
-- [Node](https://nodejs.org/en/)
-- [Minecraft Java Edition](https://minecraft.net)
+-   [Docker](https://www.docker.com/)
+-   [Node](https://nodejs.org/en/)
+-   [Minecraft Java Edition](https://minecraft.net)
 
 ## Install
 
