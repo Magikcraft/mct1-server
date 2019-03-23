@@ -7,8 +7,8 @@
         "mct1-server": "./bin/run.sh"
     },
     "scripts": {
-        "test": "echo \"No tests\" && exit 0",
-        "start": "./bin/run.sh"
+        "install": "./install",
+        "start": "./bin/mct1-server"
     },
     "repository": {
         "type": "git",
