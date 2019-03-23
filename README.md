@@ -33,7 +33,7 @@ stop 	 Stop the MCT1 server
 status 	 Get the status of the MCT1 server
 ```
 
-Start the server:
+-   Start the server:
 
 ```bash
 mct1-server start
@@ -41,13 +41,13 @@ mct1-server start
 
 Now you can connect your Minecraft client to `localhost`.
 
-Stop the server:
+-   Stop the server:
 
 ```bash
 mct1-server stop
 ```
 
-Get the server status:
+-   Get the server status:
 
 ```bash
 mct1-server status
