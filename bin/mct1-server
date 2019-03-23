@@ -1,16 +1,24 @@
 #!/usr/bin/env node
 
 const dockerCLI = require('docker-cli-js')
+const checkForUpdate = require('update-check')
+const chalk = require('chalk')
+const pkg = require('../package')
 
 const DockerOptions = dockerCLI.Options
 const Docker = dockerCLI.Docker
 
 const { mct1WorldDir, mct1PluginDir } = require('../lib/util')
-const { getWorlds, mct1WorldsExistLocally } = require('../lib/getWorlds')
+const {
+    getWorlds,
+    getLocalWorldsMetadata,
+    mct1WorldsExistLocally,
+} = require('../lib/getWorlds')
 const { copyPlugin, pluginExists } = require('../lib/copyPlugin')
 
 const md = require('../package.json')
 
+const header = chalk.green('\nMCT1 Server - by Magikcraft.io\n')
 const msgNotRunning = 'MCT1 Server is not running.'
 const worldStatus = () =>
     mct1WorldsExistLocally()
@@ -44,23 +52,50 @@ const commands = {
         description: 'Get the status of the MCT1 server',
         name: 'status',
     },
+
+    version: {
+        description: 'Output version information',
+        name: 'version',
+    },
 }
 
 if (!command || !commands[command]) {
     printHelp()
-    process.exit()
+    exit()
 }
 
 processCommand(command)
 
+async function doUpdateCheck() {
+    let update = null
+
+    try {
+        update = await checkForUpdate(pkg)
+    } catch (err) {
+        console.error(`Failed to check for updates: ${err}`)
+    }
+
+    if (update) {
+        console.log(
+            chalk.yellow(
+                `\nAn updated version is available. The latest version is ${
+                    update.latest
+                }. Please update!`
+            )
+        )
+        console.log(chalk.blue('\nnpm i -g mct1-server\n'))
+    }
+    return true
+}
+
 function printHelp() {
-    console.log('\nMCT1 Server - by Magikcraft.io')
+    console.log(header)
     console.log(`Version ${md.version}`)
     console.log('\nUsage:')
     console.log('mct1-server <command>')
     console.log('\nAvailable commands:')
     Object.keys(commands).forEach(c =>
-        console.log(`${c} \t ${commands[c].description}`)
+        console.log(`${c} \t \t ${commands[c].description}`)
     )
 }
 
@@ -74,6 +109,28 @@ function processCommand(command) {
     if (command === commands.status.name) {
         getStatus()
     }
+    if (command === commands.version.name) {
+        printVersions()
+    }
+}
+
+function printVersions() {
+    Promise.resolve()
+        .then(getLocalWorldsMetadata)
+        .then(({ version }) => {
+            const worldsVersion = version === '0.0.0' ? 'Not found' : version
+            const pluginVersion = pluginExists()
+                ? require(`${mct1PluginDir}/package`).version
+                : 'Not found'
+            const serverVersion = pkg.version
+            console.log(header)
+
+            console.log(`Server version: ${serverVersion}`)
+            console.log(`Worlds Version: ${worldsVersion}`)
+            console.log(`Plugin version: ${pluginVersion}`)
+            return true
+        })
+        .then(exit)
 }
 
 function getContainerStatus(data) {
@@ -103,7 +160,7 @@ function startServer() {
         .then(data => {
             if (data.Status === 'running') {
                 console.log('Server is already running.')
-                process.exit(0)
+                exit()
             }
             if (data.Status === 'exited') {
                 return removeStoppedInstance()
@@ -175,7 +232,7 @@ function stopServer() {
 }
 
 function exit() {
-    process.exit(0)
+    return doUpdateCheck().then(process.exit)
 }
 
 function stopRunningInstance() {
