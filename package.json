@@ -2,13 +2,12 @@
     "name": "@magikcraft/mct1-server",
     "version": "0.0.7",
     "description": "A Minecraft for Type 1 Diabetes Server",
-    "main": "index.js",
+    "main": "./bin/index.js",
     "bin": {
-        "mct1-server": "./bin/run.sh"
+        "mct1-server": "./bin/mct1-server"
     },
     "scripts": {
-        "install": "./install",
-        "start": "./bin/mct1-server"
+        "install": "./install"
     },
     "repository": {
         "type": "git",
