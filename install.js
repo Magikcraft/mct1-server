@@ -2,7 +2,14 @@
  * This file contains code shamelessly, and grateful, cribbed from Medium Phantomjs installer. It is licensed under Apache 2.0.
  */
 const exec = require('child_process').exec
-const { getWorlds, mct1WorldsExistLocally } = require('./lib/getWorlds')
+const chalk = require('chalk')
+
+const {
+    getWorlds,
+    mct1WorldsExistLocally,
+    worldUpdateAvailable,
+    getLocalWorldsMetadata,
+} = require('./lib/getWorlds')
 const { copyPlugin } = require('./lib/copyPlugin')
 const { mct1WorldDir } = require('./lib/util')
 
@@ -38,8 +45,25 @@ function checkForDocker() {
 
 function checkMCT1WorldsLocally() {
     if (mct1WorldsExistLocally()) {
-        console.log('Found MCT1 worlds installed at', mct1WorldDir)
-        exit(0)
+        return Promise.resolve()
+            .then(getLocalWorldsMetadata)
+            .then(({ version }) => {
+                return console.log(
+                    `Found MCT1 worlds version ${version} installed at`,
+                    mct1WorldDir
+                )
+            })
+            .then(worldUpdateAvailable)
+            .then(updateAvailable => {
+                if (updateAvailable) {
+                    console.log(
+                        chalk.yellow(
+                            `World update available: ${updateAvailable}`
+                        )
+                    )
+                }
+                return updateAvailable || exit(0)
+            })
     } else {
         return Promise.resolve()
     }
@@ -56,7 +80,12 @@ function exit(code) {
     validExit = true
     if (code === 0) {
         console.log(`MCT1 Server installed.`)
-        console.log(`\nType 'mct1-server start' to start`)
+        console.log(
+            '\n' +
+                chalk.blue('Type ') +
+                chalk.yellow('mct1-server start') +
+                chalk.blue(' to start\n')
+        )
     }
     process.exit(code || 0)
 }
