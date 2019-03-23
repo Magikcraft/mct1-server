@@ -3,6 +3,7 @@
  */
 const exec = require('child_process').exec
 const { getWorlds, mct1WorldsExistLocally } = require('./lib/getWorlds')
+const { copyPlugin } = require('./lib/copyPlugin')
 const { mct1WorldDir } = require('./lib/util')
 
 // If the process exits without going through exit(), then we did not complete.
@@ -10,6 +11,7 @@ var validExit = false
 
 Promise.resolve(true)
     .then(checkForDocker)
+    .then(copyPlugin)
     .then(checkMCT1WorldsLocally)
     .then(getWorlds)
     .then(() => exit(0))

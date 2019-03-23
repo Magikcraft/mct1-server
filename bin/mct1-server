@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 
 const dockerCLI = require('docker-cli-js')
+const path = require('path')
+
 const DockerOptions = dockerCLI.Options
 const Docker = dockerCLI.Docker
 
@@ -122,10 +124,7 @@ function startNewInstance() {
         `--mount type=bind,src=${src},dst=/server/${dst}`
 
     const worlds = mount(mct1WorldDir, 'worlds')
-    const plugin = mount(
-        `${__dirname}/../node_modules/@magikcraft/mct1`,
-        'scriptcraft-plugins/@magikcraft/mct1'
-    )
+    const plugin = mount(mct1PluginDir, 'scriptcraft-plugins/@magikcraft/mct1')
     docker
         .command(
             `run -d -p ${port}:25565 --name mct1 ${worlds} ${plugin} --restart always magikcraft/scriptcraft`
