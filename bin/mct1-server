@@ -1,20 +1,26 @@
 #!/usr/bin/env node
 
 const dockerCLI = require('docker-cli-js')
-const path = require('path')
 
 const DockerOptions = dockerCLI.Options
 const Docker = dockerCLI.Docker
 
-const { mct1WorldDir } = require('../lib/util')
+const { mct1WorldDir, mct1PluginDir } = require('../lib/util')
 const { getWorlds, mct1WorldsExistLocally } = require('../lib/getWorlds')
+const { copyPlugin, pluginExists } = require('../lib/copyPlugin')
+
 const md = require('../package.json')
 
 const msgNotRunning = 'MCT1 Server is not running.'
 const worldStatus = () =>
     mct1WorldsExistLocally()
-        ? ` Worlds installed at ${mct1WorldDir}.`
-        : ` Worlds not found at ${mct1WorldDir}. Start server to download worlds.`
+        ? `\nWorlds installed at ${mct1WorldDir}.`
+        : `\nWorlds not found at ${mct1WorldDir}. Start server to download worlds.`
+
+const pluginStatus = () =>
+    pluginExists()
+        ? `\nPlugin installed in ${mct1PluginDir}`
+        : `\nPlugin not installed in ${mct1PluginDir}. Start server to install plugin.`
 
 const options = new DockerOptions(
     /* machineName */ null,
@@ -74,9 +80,12 @@ function getContainerStatus(data) {
     return docker
         .command('inspect mct1')
         .then(data =>
-            Object.assign(data.object[0].State, { worlds: mct1WorldDir })
+            Object.assign(data.object[0].State, {
+                worlds: mct1WorldDir,
+                plugin: mct1PluginDir,
+            })
         )
-        .catch(() => msgNotRunning + worldStatus())
+        .catch(() => msgNotRunning + worldStatus() + pluginStatus())
 }
 
 function getStatus() {
@@ -89,6 +98,7 @@ function startServer() {
     // Check if server is running
     Promise.resolve()
         .then(getWorldsIfNeeded)
+        .then(installPluginIfNeeded)
         .then(getContainerStatus)
         .then(data => {
             if (data.Status === 'running') {
@@ -115,6 +125,10 @@ function restartPausedContainer() {
 
 function getWorldsIfNeeded() {
     return Promise.resolve().then(() => mct1WorldsExistLocally() || getWorlds())
+}
+
+function installPluginIfNeeded() {
+    Promise.resolve().then(() => pluginExists() || copyPlugin())
 }
 
 function startNewInstance() {
@@ -150,7 +164,7 @@ function stopServer() {
                 exit()
             }
             if (data.Status === 'exited') {
-                Promise.resolve()
+                return Promise.resolve()
                     .then(removeStoppedInstance)
                     .then(exit)
             }
