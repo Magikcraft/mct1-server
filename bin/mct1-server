@@ -14,7 +14,7 @@ const {
     getLocalWorldsMetadata,
     mct1WorldsExistLocally,
 } = require('../lib/getWorlds')
-const { copyPlugin, pluginExists } = require('../lib/copyPlugin')
+const { copyPlugin, pluginExists, pluginVersion } = require('../lib/copyPlugin')
 
 const md = require('../package.json')
 
@@ -27,7 +27,7 @@ const worldStatus = () =>
 
 const pluginStatus = () =>
     pluginExists()
-        ? `\nPlugin installed in ${mct1PluginDir}`
+        ? `\nPlugin installed in ${mct1PluginDir}.`
         : `\nPlugin not installed in ${mct1PluginDir}. Start server to install plugin.`
 
 const options = new DockerOptions(
@@ -115,19 +115,19 @@ function processCommand(command) {
 }
 
 function printVersions() {
-    Promise.resolve()
+    return Promise.resolve()
         .then(getLocalWorldsMetadata)
         .then(({ version }) => {
             const worldsVersion = version === '0.0.0' ? 'Not found' : version
-            const pluginVersion = pluginExists()
-                ? require(`${mct1PluginDir}/package`).version
-                : 'Not found'
+            const mct1Version = pluginVersion()
             const serverVersion = pkg.version
             console.log(header)
 
             console.log(`Server version: ${serverVersion}`)
             console.log(`Worlds Version: ${worldsVersion}`)
-            console.log(`Plugin version: ${pluginVersion}`)
+            console.log(`Plugin version: ${mct1Version}`)
+            console.log(`\nWorlds dir: ${mct1WorldDir}`)
+            console.log(`Plugin dir: ${mct1PluginDir}`)
             return true
         })
         .then(exit)

@@ -13,3 +13,7 @@
 -   During package installation, the installer checks the version of any locally installed worlds against the version in this key. If there is a higher version in the package.json, the installer will replace the local worlds with the updated ones.
 
 _Question_: Should we save the existing ones? Will users want to mutate them?
+
+# Forcing a Docker Pull
+
+We need to tag the docker images and put an update check mechanism in place.
