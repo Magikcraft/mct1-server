@@ -1,5 +1,5 @@
 {
-    "name": "@magikcraft/mct1-server",
+    "name": "mct1-server",
     "version": "0.0.7",
     "description": "A Minecraft for Type 1 Diabetes Server",
     "main": "./bin/index.js",

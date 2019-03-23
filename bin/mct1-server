@@ -1,0 +1,173 @@
+#!/usr/bin/env node
+
+const dockerCLI = require('docker-cli-js')
+const DockerOptions = dockerCLI.Options
+const Docker = dockerCLI.Docker
+
+const { mct1WorldDir } = require('../lib/util')
+const { getWorlds, mct1WorldsExistLocally } = require('../lib/getWorlds')
+
+const msgNotRunning = 'MCT1 Server is not running.'
+const worldStatus = () =>
+    mct1WorldsExistLocally()
+        ? ` Worlds installed at ${mct1WorldDir}.`
+        : ` Worlds not found at ${mct1WorldDir}. Start server to download worlds.`
+
+const options = new DockerOptions(
+    /* machineName */ null,
+    /* currentWorkingDirectory */ __dirname
+)
+const docker = new Docker(options)
+
+const command = process.argv[2]
+const commands = {
+    start: {
+        description: 'Start the MCT1 server',
+        name: 'start',
+    },
+
+    stop: {
+        description: 'Stop the MCT1 server',
+        name: 'stop',
+    },
+
+    status: {
+        description: 'Get the status of the MCT1 server',
+        name: 'status',
+    },
+}
+
+if (!command || !commands[command]) {
+    printHelp()
+    process.exit()
+}
+
+processCommand(command)
+
+function printHelp() {
+    console.log('\nMCT1 Server - by Magikcraft.io')
+    console.log('\nUsage:')
+    console.log('mct1-server <command>')
+    console.log('\nAvailable commands:')
+    Object.keys(commands).forEach(c =>
+        console.log(`${c} \t ${commands[c].description}`)
+    )
+}
+
+function processCommand(command) {
+    if (command === commands.start.name) {
+        startServer()
+    }
+    if (command === commands.stop.name) {
+        stopServer()
+    }
+    if (command === commands.status.name) {
+        getStatus()
+    }
+}
+
+function getContainerStatus(data) {
+    return docker
+        .command('inspect mct1')
+        .then(data =>
+            Object.assign(data.object[0].State, { worlds: mct1WorldDir })
+        )
+        .catch(() => msgNotRunning + worldStatus())
+}
+
+function getStatus() {
+    return Promise.resolve()
+        .then(getContainerStatus)
+        .then(console.log)
+}
+
+function startServer() {
+    // Check if server is running
+    Promise.resolve()
+        .then(getWorldsIfNeeded)
+        .then(getContainerStatus)
+        .then(data => {
+            if (data.Status === 'running') {
+                console.log('Server is already running.')
+                process.exit(0)
+            }
+            if (data.Status === 'exited') {
+                return removeStoppedInstance()
+            }
+            if (data.Status === 'paused') {
+                return restartPausedContainer()
+                    .then(getStatus)
+                    .then(exit)
+            }
+            console.log('Starting MCT1 Server')
+        })
+        .then(startNewInstance)
+}
+
+function restartPausedContainer() {
+    console.log('Unpausing MCT1 Server')
+    return docker.command('unpause mct1')
+}
+
+function getWorldsIfNeeded() {
+    return Promise.resolve().then(() => mct1WorldsExistLocally() || getWorlds())
+}
+
+function startNewInstance() {
+    const port = process.argv[3] || 25565
+
+    const mount = (src, dst) =>
+        `--mount type=bind,src=${src},dst=/server/${dst}`
+
+    const worlds = mount(mct1WorldDir, 'worlds')
+    const plugin = mount(
+        `${__dirname}/../node_modules/@magikcraft/mct1`,
+        'scriptcraft-plugins/@magikcraft/mct1'
+    )
+    docker
+        .command(
+            `run -d -p ${port}:25565 --name mct1 ${worlds} ${plugin} --restart always magikcraft/scriptcraft`
+        )
+        .then(() => {
+            console.log(`MCT1 Server started on localhost:${port}`)
+        })
+        .catch(e => {
+            console.log('There was an error starting the server!')
+            console.log(e)
+            console.log(
+                `\nTry stopping the server, then starting it again.\n\nIf that doesn't work - check if this issue has been reported at https://github.com/Magikcraft/mct1-server/issues`
+            )
+        })
+}
+
+function stopServer() {
+    Promise.resolve()
+        .then(getContainerStatus)
+        .then(data => {
+            if (!data.Status) {
+                console.log(msgNotRunning)
+                exit()
+            }
+            if (data.Status === 'exited') {
+                Promise.resolve()
+                    .then(removeStoppedInstance)
+                    .then(exit)
+            }
+            console.log('Shutting down server...')
+        })
+        .then(stopRunningInstance)
+        .then(removeStoppedInstance)
+}
+
+function exit() {
+    process.exit(0)
+}
+
+function stopRunningInstance() {
+    return docker.command('stop mct1')
+}
+
+function removeStoppedInstance() {
+    console.log('Removing stopped container')
+    return docker.command('rm mct1')
+}
