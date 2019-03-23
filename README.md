@@ -16,6 +16,23 @@ npm i -g mct1-server
 
 ## Run
 
+Use the `mct1-server` command to start and stop the server.
+
+```bash
+➜ mct1-server
+
+MCT1 Server - by Magikcraft.io
+Version 0.0.11
+
+Usage:
+mct1-server <command>
+
+Available commands:
+start 	 Start the MCT1 server
+stop 	 Stop the MCT1 server
+status 	 Get the status of the MCT1 server
+```
+
 Start the server:
 
 ```bash

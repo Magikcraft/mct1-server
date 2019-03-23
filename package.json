@@ -1,13 +1,13 @@
 {
     "name": "mct1-server",
-    "version": "0.0.7",
+    "version": "0.0.11",
     "description": "A Minecraft for Type 1 Diabetes Server",
     "main": "./bin/index.js",
     "bin": {
         "mct1-server": "./bin/mct1-server"
     },
     "scripts": {
-        "install": "./install"
+        "install": "node install.js"
     },
     "repository": {
         "type": "git",

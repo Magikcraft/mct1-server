@@ -6,6 +6,7 @@ const Docker = dockerCLI.Docker
 
 const { mct1WorldDir } = require('../lib/util')
 const { getWorlds, mct1WorldsExistLocally } = require('../lib/getWorlds')
+const md = require('../package.json')
 
 const msgNotRunning = 'MCT1 Server is not running.'
 const worldStatus = () =>
@@ -46,6 +47,7 @@ processCommand(command)
 
 function printHelp() {
     console.log('\nMCT1 Server - by Magikcraft.io')
+    console.log(`Version ${md.version}`)
     console.log('\nUsage:')
     console.log('mct1-server <command>')
     console.log('\nAvailable commands:')
