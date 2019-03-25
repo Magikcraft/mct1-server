@@ -196,9 +196,10 @@ function startNewInstance() {
 
     const worlds = mount(mct1WorldDir, 'worlds')
     const plugin = mount(mct1PluginDir, 'scriptcraft-plugins/@magikcraft/mct1')
+    const cache = `--mount source=mct1-server-cache,target=/server/cache`
     docker
         .command(
-            `run -d -p ${port}:25565 --name mct1 ${worlds} ${plugin} --restart always magikcraft/scriptcraft`
+            `run -d -p ${port}:25565 --name mct1 ${worlds} ${plugin} ${cache} --restart always magikcraft/scriptcraft`
         )
         .then(() => {
             console.log(`MCT1 Server started on localhost:${port}`)
