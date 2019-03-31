@@ -4,7 +4,7 @@ const dockerCLI = require('docker-cli-js')
 const checkForUpdate = require('update-check')
 const chalk = require('chalk')
 const pkg = require('../package')
-
+const { checkEula } = require('../lib/eula')
 const DockerOptions = dockerCLI.Options
 const Docker = dockerCLI.Docker
 
@@ -101,7 +101,7 @@ function printHelp() {
 
 function processCommand(command) {
     if (command === commands.start.name) {
-        startServer()
+        checkEula().then(startServer)
     }
     if (command === commands.stop.name) {
         stopServer()
@@ -197,9 +197,10 @@ function startNewInstance() {
     const worlds = mount(mct1WorldDir, 'worlds')
     const plugin = mount(mct1PluginDir, 'scriptcraft-plugins/@magikcraft/mct1')
     const cache = `--mount source=mct1-server-cache,target=/server/cache`
+    const eula = `-e MINECRAFT_EULA_ACCEPTED=true`
     docker
         .command(
-            `run -d -p ${port}:25565 --name mct1 ${worlds} ${plugin} ${cache} --restart always magikcraft/scriptcraft`
+            `run -d -p ${port}:25565 --name mct1 ${eula} ${worlds} ${plugin} ${cache} --restart always magikcraft/scriptcraft`
         )
         .then(() => {
             console.log(`MCT1 Server started on localhost:${port}`)
