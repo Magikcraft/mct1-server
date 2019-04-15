@@ -189,14 +189,15 @@ function installPluginIfNeeded() {
 }
 
 function startNewInstance() {
+    const serverDir = '_server_'
     const port = process.argv[3] || 25565
 
     const mount = (src, dst) =>
-        `--mount type=bind,src=${src},dst=/server/${dst}`
+        `--mount type=bind,src=${src},dst=/${serverDir}/${dst}`
 
     const worlds = mount(mct1WorldDir, 'worlds')
     const plugin = mount(mct1PluginDir, 'scriptcraft-plugins/@magikcraft/mct1')
-    const cache = `--mount source=mct1-server-cache,target=/server/cache`
+    const cache = `--mount source=mct1-server-cache,target=/${serverDir}/cache`
     const eula = `-e MINECRAFT_EULA_ACCEPTED=true`
     docker
         .command(
